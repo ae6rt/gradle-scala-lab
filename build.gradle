@@ -1,0 +1,30 @@
+apply plugin: 'scala'
+
+project.ext.someParam = "SOME_PARAM"
+project.ext.scalaVersion = "2.9.2"
+
+repositories {
+    mavenCentral()
+}
+
+task runme(type: JavaExec, dependsOn: classes) {
+    doFirst {
+        if (System.properties[project.someParam] == null) {
+            throw new GradleException(sprintf("Usage:  gradle runme -D%s=<someparam>\n", project.someParam))
+        }
+    }
+    main = 'myapp.App'
+    args = [System.properties[project.someParam]]
+    classpath sourceSets.main.runtimeClasspath
+}
+
+dependencies {
+    // Libraries needed to run the scala tools
+    scalaTools "org.scala-lang:scala-compiler:$project.scalaVersion"
+    scalaTools "org.scala-lang:scala-library:$project.scalaVersion"
+
+    // Libraries needed for scala api
+    compile "org.scala-lang:scala-library:$project.scalaVersion"
+}
+
+
